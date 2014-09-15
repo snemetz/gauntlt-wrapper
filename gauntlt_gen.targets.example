@@ -1,0 +1,23 @@
+# vim: set filetype=yaml:
+
+:production:
+- :host: lb
+  :hostname: lb.example.com
+  :attacks:
+  - lb_ports
+- :host: app01
+  :hostname: app01.example.com
+  :attacks:
+  - app_ports
+- :host: app02
+  :hostname: app02.example.com
+  :attacks:
+  - app_ports
+- :host: dev
+  :hostname: http://localhost:3000
+  :attacks:
+  - sqlmap
+- :host: db01
+  :hostname: db01.example.com
+  :attacks:
+  - db_ports
