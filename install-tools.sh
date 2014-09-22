@@ -22,13 +22,15 @@
 #      http://www6.atomicorp.com/channels/atomic/centos/6/x86_64/RPMS/
 #      http://www6.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/
 #      Also: Nikto, OpenVAS, OSSec, 
-wget http://sourceforge.net/projects/dirb/files/dirb/2.21/dirb221.tar.gz/download
-./configure
-make
-make install
+# TODO:
+#wget http://sourceforge.net/projects/dirb/files/dirb/2.21/dirb221.tar.gz/download
+#./configure
+#make
+#make install
 #  arachni
 #    Requires glibc >=2.12
-wget http://downloads.arachni-scanner.com/arachni-1.0-0.5.1-linux-x86_64.tar.gz
+# TODO:
+#wget http://downloads.arachni-scanner.com/arachni-1.0-0.5.1-linux-x86_64.tar.gz
 #  heartbleed
 #    Requires Go 1.2.x
 #go get github.com/FiloSottile/Heartbleed
@@ -39,7 +41,8 @@ wget http://downloads.arachni-scanner.com/arachni-1.0-0.5.1-linux-x86_64.tar.gz
 #wget https://github.com/iSECPartners/sslyze/releases/download/release-0.9/sslyze-0_9-linux64.zip
 #  sqlmap - Python
 #    http://sqlmap.org/
-git clone https://github.com/sqlmapproject/sqlmap.git sqlmap
+# TODO:
+#git clone https://github.com/sqlmapproject/sqlmap.git sqlmap
 # vim gherkin syntax highlighting
 # http://rapaul.com/2010/06/21/gherkin-highlighting-for-vim/
 # cp cucumber.vim ~/.vim/syntax/
@@ -49,7 +52,7 @@ git clone https://github.com/sqlmapproject/sqlmap.git sqlmap
 #  Python: golismero (full framework w/ GUI )
 
 #apt-get install curl nmap openssl
-yum install curl curl-devel nmap openssl git make bison gcc glibc-devel mercurial
+sudo yum install curl curl-devel nmap openssl git make bison gcc glibc-devel mercurial
 
 # Install Go
 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
@@ -58,9 +61,11 @@ gvm install go1.3
 gvm use go1.3
 go get github.com/FiloSottile/Heartbleed
 go install github.com/FiloSottile/Heartbleed
+source ~/.gvm/scripts/gvm
 
 # Install Python
-# Install python 2.7
+### EL6 ONLY START
+# Install python 2.7 only for EL6
 cd /etc/pki/rpm-gpg/
 wget -q http://springdale.math.ias.edu/data/puias/6/x86_64/os/RPM-GPG-KEY-puias
 rpm --import RPM-GPG-KEY-puias
@@ -73,6 +78,12 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puias
 REPO
 yum install python27 python27-tools
+### EL6 ONLY END
+### EL7 BEGIN
+# Add epel repo
+sudo rpm -U http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm
+sudo yum install python-pip
+### EL7 END
 #   Install pip
 #sudo yum install python-pip
 # Use virtualenvwrapper
@@ -83,16 +94,23 @@ export PROJECT_HOME=$HOME/Devel
 export VIRTUALENVWRAPPER_SCRIPT=/usr/bin/virtualenvwrapper.sh
 source /usr/bin/virtualenvwrapper_lazy.sh
 workon
+# EL6
 mkvirtualenv gauntlt -p /usr/bin/python2.7
-workon
-# Install gramr
-pip install garmr
+# EL7
+mkvirtualenv gauntlt -p /usr/bin/python
+workon gauntlt
+# Install garmr - doesn't work - get from github
+pip install BeautifulSoup garmr
 # Install sslyze - python 2.7
 # dl, pushd
+mkdir -p tools
+pushd tools
 wget https://github.com/iSECPartners/sslyze/releases/download/release-0.9/sslyze-0_9-linux64.zip
 unzip sslyze-0_9-linux64.zip
 pushd sslyze-0_9-linux64
 python setup.py install
+popd
+popd
 
 # Install Ruby gems
 # Use rvm

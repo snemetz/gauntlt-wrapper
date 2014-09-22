@@ -1,0 +1,53 @@
+@announce-cmd
+@slow
+
+Feature: Run sslyze against a target
+Strong Security: Only TLSv1.2 ciphers, HSTS, No Compression
+
+Background:
+  Given "sslyze" is installed
+  And the following profile:
+    | name     | value            |
+    <% config.each do |name, value| -%>
+    | <%= name %> | <%= value %> |
+    <% end -%>
+
+Scenario: Ensure strong SSL protection
+  When I launch an "sslyze" attack with:
+    """
+    python <sslyze_path> --regular --hsts <hostname>:<port_www>
+    """
+  Then the output should match:
+    """
+    DEFLATE Compression:\s+Disabled
+    """
+  # Verify no TLS v1.1 ciphers are enabled
+  Then the output should match:
+    """
+    TLSV1_1 Cipher Suites:\s+Server rejected all cipher suites
+    """
+  # Verify no TLS v1 ciphers are enabled
+  Then the output should match:
+    """
+    TLSV1 Cipher Suites:\s+Server rejected all cipher suites
+    """
+  # Verify no SSL v3 ciphers are enabled
+  Then the output should match:
+    """
+    SSLV3 Cipher Suites:\s+Server rejected all cipher suites
+    """
+  # Verify no SSL v2 ciphers are enabled
+  Then the output should match:
+    """
+    SSLV2 Cipher Suites:\s+Server rejected all cipher suites
+    """
+  # Verify HTTP Strict Transport Security (HSTS) is enabled
+  Then the output should match:
+    """
+    HTTP Strict Transport Security:\s+Supported:\s+max-age=
+    """
+  # Verify there are NO Anon ciphers
+  But the output should not contain:
+    """
+    Anon
+    """

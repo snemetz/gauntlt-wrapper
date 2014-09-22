@@ -1,3 +1,4 @@
+@announce-cmd
 @slow
 
 Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, change the value in the profile
@@ -5,23 +6,19 @@ Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, c
     Given "nmap" is installed
     And the following profile:
       | name           | value        |
-      | tcp_ping_ports | 22,25,80,443 |
+      | tcp_ping_ports | 22,25,3306 |
       <% config.each do |name, value| -%>
       | <%= name %> | <%= value %> |
       <% end -%>
 
-  Scenario: Verify server is open on expected set of ports using the nmap-fast attack step
-    When I launch a "nmap-fast" attack
-    Then the output should match /80.tcp\s+open/
-
   Scenario: Verify server is open on expected set of ports using the nmap fast flag
     When I launch an "nmap" attack with:
       """
-      nmap -F <hostname>
+      nmap -F -Pn <hostname>
       """
     Then the output should match:
       """
-      80/tcp\s+open
+      3306/tcp
       """
 
   Scenario: Verify that there are no unexpected ports open
@@ -31,7 +28,5 @@ Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, c
       """
     Then the output should not contain:
       """
-      22/tcp
       25/tcp
-      443/tcp
       """

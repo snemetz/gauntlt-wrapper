@@ -1,0 +1,18 @@
+@announce-cmd
+@slow
+Feature: Look for cross site scripting (xss) using arachni against a URL
+
+Scenario: Using the arachni, look for cross site scripting and verify no issues are found
+  Given "arachni" is installed
+  And the following profile:
+    | name                | value                          |
+    | url                 | https://<%= config[:hostname] %>       |
+    <% config.each do |name, value| -%>
+    | <%= name %> | <%= value %> |
+    <% end -%>
+
+  #When I launch an "arachni-(simple_xss|simple_xss_with_depth|full_xss|full_xss_with_depth|xss_with_options)" attack
+  When I launch an "arachni-full_xss" attack
+  #When I launch an "arachni" attack with:
+  Then the output should contain "0 issues were detected."
+

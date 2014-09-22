@@ -1,0 +1,27 @@
+@announce-cmd
+@slow
+Feature: Run dirb scan on a URL
+
+Scenario: Use dirb to scan a website for basic security requirements and the DIRB_WORDLISTS environment variable must be set in your path.  You can use different wordlists by changing the environment variable.
+  Given "dirb" is installed
+  And the following profile:
+    | name                | value                          |
+    | dirb_wordlists_path | Overwritten by $DIRB_WORDLISTS |
+    | wordlist            | vulns/tests.txt                |
+    <% config.each do |name, value| -%>
+    | <%= name %> | <%= value %> |
+    <% end -%>
+
+  When I launch a "dirb" attack with:
+  """
+  dirb https://<hostname> <dirb_wordlists_path>/<wordlist> -f <dirb_options>
+  """
+  Then the output should contain:
+  """
+  FOUND: 0
+  """
+  But the output should not contain:
+  """
+  FATAL: Too many errors
+  """
+

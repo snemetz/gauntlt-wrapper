@@ -1,17 +1,27 @@
+Gauntlt
+  support more variable: port
+  Support more tools: OWASP O-Saft
+Tests
+  Verify services up (ports open) + ? on deploy
+  Full security test
 
-Test
   nmap
 	Proper TCP ports open
 		web: 80,8080,443,8443
-		mysql:
+		java:
+		mysql: 3306
 		oracle:
 		mongodb:
 		postgres:
+		activemq:
+		memcached:
 		puppet: 8139
 		nrpe: 5666
 		ssh: 22
 		splunk: 8089
+		smtp: 25 ?
 	Proper UDP ports open
+		ntp: 123 ?
 		snmp: 161
 		winbind: 34472
 	No other ports opens

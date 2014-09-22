@@ -1,13 +1,14 @@
 @slow
 
-Feature: nmap attacks for <%= @host %> and to use this for your tests, change the value in the profile
+Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, change the value in the profile
   Background:
     Given "nmap" is installed
     And the following profile:
       | name           | value        |
-      | hostname       | <%= @hostname %> |
-      | host           | <%= @hostname %> |
       | tcp_ping_ports | 22,25,80,443,5432,11211 |
+      <% config.each do |name, value| -%>
+      | <%= name %> | <%= value %> |
+      <% end -%>
 
   Scenario: Verify server is open on expected set of ports using the nmap fast flag
     When I launch an "nmap" attack with:

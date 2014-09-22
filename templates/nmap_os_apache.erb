@@ -1,0 +1,28 @@
+@announce-cmd
+@slow
+
+Feature: Service detection. Make sure Apache is running and does not display the version
+
+  Background:
+    Given "nmap" is installed
+    And the following profile:
+      | name     | value            |
+      <% config.each do |name, value| -%>
+      | <%= name %> | <%= value %> |
+      <% end -%>
+
+  Scenario: Detect OS
+    When I launch an "nmap" attack with:
+      """
+      nmap -sV -p T:<port_www> -PN <hostname>
+      """
+    # Verify Apache server with no version info
+    Then the output should contain:
+      """
+      Apache
+      """
+    But the output should not match:
+      """
+      Apache httpd [0-9.]+
+      """
+
