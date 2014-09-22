@@ -7,10 +7,10 @@ The goal of this is to make it easy to run gauntlt 100% automated. Which means i
 Usage
 ===========
 
-* Copy the contents of this repository to a directory in your application (it can be standalone too!)
-* install-tools.sh is a work in progress for installing all the tools in virtual environments on CentOS
-* init.env.sh is for getting environment setup in a new shell after everything haas been installed
-* run.sh is for generating the attack files and running gauntlt
+* Copy the contents of this repository to a directory
+* `install-tools.sh` is a work in progress for installing all the tools in virtual environments on CentOS
+* `init.env.sh` is for getting environment setup in a new shell after everything haas been installed
+* `run.sh` is for generating the attack files and running gauntlt
 
 * Create `gauntlt_gen.targets` using `gauntlt_gen.targets.example` as an example.
 * Create/modify templates in `templates/` Keep the filenames simple, as they are referenced by the `gauntlt_gen.targets` file.
@@ -23,8 +23,8 @@ Please note that the templates included here are works in progress. Some are com
 
 Thanks
 ======
-Patrick Morgan for gauntlt_gen. Which helped getting this started. My version is part of this repo and is not compatible with the original.
-Everyone working on gauntlt
+- Patrick Morgan for gauntlt_gen. Which helped getting this started. My version is part of this repo and is not compatible with the original.
+- Everyone working on gauntlt
 
 The MIT License
 
