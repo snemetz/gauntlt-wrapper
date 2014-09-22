@@ -1,23 +1,19 @@
 # vim: set filetype=yaml:
 
 :production:
-- :host: lb
-  :hostname: lb.example.com
+- :data:
+    :host: web
+    :hostname: web.example.com
+    :port_open: 443
+    :port_range: "80,443,8080,8443"
   :attacks:
-  - lb_ports
-- :host: app01
-  :hostname: app01.example.com
+  - nmap_only_port
+  - nmap_os_apache
+  - sslyze_strong
+- :data:
+    :host: db
+    :hostname: db.example.com
+    :port_open: 3306
+    :port_range: "25,80,443,3306,8080,8443"
   :attacks:
-  - app_ports
-- :host: app02
-  :hostname: app02.example.com
-  :attacks:
-  - app_ports
-- :host: dev
-  :hostname: http://localhost:3000
-  :attacks:
-  - sqlmap
-- :host: db01
-  :hostname: db01.example.com
-  :attacks:
-  - db_ports
+  - nmap_only_port

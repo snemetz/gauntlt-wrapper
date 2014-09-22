@@ -13,17 +13,17 @@ Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, c
   Scenario: Verify server is open on expected set of ports and not on other common ports
     When I launch an "nmap" attack with:
       """
-      nmap -p T:<port_range_www> -PN <hostname>
+      nmap -p T:<port_range> -PN <hostname>
       """
     # Verify expected port is open
-    Then the output should match /<%= config[:port_www] %>.tcp\s+open/
+    Then the output should match /<%= config[:port_open] %>.tcp\s+open/
     # Verify that there are no unexpected ports open
     # TODO: Handle case where good port is first in list
     But the output should not match:
     """
-<% first = config[:port_range_www].split(",").first
-   config[:port_range_www].split(",").each do |port|
-     if "#{port}" == "#{config[:port_www]}" then next end
+<% first = config[:port_range].split(",").first
+   config[:port_range].split(",").each do |port|
+     if "#{port}" == "#{config[:port_open]}" then next end
      if first != port then pre = '|' else pre = '' end
 -%>
 <%= pre %><%= port %>/tcp\s+open<% end %>

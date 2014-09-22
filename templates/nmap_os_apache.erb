@@ -14,7 +14,7 @@ Feature: Service detection. Make sure Apache is running and does not display the
   Scenario: Detect OS
     When I launch an "nmap" attack with:
       """
-      nmap -sV -p T:<port_www> -PN <hostname>
+      nmap -sV -p T:<port_open> -PN <hostname>
       """
     # Verify Apache server with no version info
     Then the output should contain:

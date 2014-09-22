@@ -26,7 +26,7 @@ class GauntltGen < Thor
         # Generate the attack files from the templates
         attack_config[:attacks].each do |attack_id|
           template_path = "templates/#{attack_id}.erb"
-          attack_path = File.join @attack_root, "_gen_#{attack_env}_#{host}_#{attack_id}.attack"
+          attack_path = File.join @attack_root, "_gen_#{attack_env}_#{attack_config[:data][:host]}_#{attack_id}.attack"
           template template_path, attack_path, attack_config[:data]
         end
       end
