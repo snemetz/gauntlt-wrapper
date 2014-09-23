@@ -9,7 +9,7 @@
   :attacks:
   - nmap_only_port
   - nmap_os_apache
-  - sslyze_strong
+  - sslyze_TLSv1.2_only
 - :data:
     :host: db
     :hostname: db.example.com
