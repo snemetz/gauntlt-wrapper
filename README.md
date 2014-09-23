@@ -7,9 +7,9 @@ The goal of this is to make it easy to run gauntlt 100% automated. Which means i
 ## Table of Contents
 
 * [Usage](#usage)
-* [Documention](#documentation)
-  * [Targets File](#targets_file)
-  * [Template Files](#template_files)
+* [Documentation](#documentation)
+  * [Targets File](#targets-file)
+  * [Template Files](#template-files)
 
 ## Usage
 
@@ -26,7 +26,7 @@ The goal of this is to make it easy to run gauntlt 100% automated. Which means i
 
 Please note that the templates included here are works in progress. Some are complete and some may need to be modified. Feel free to sumbit pull requests to add more templates.
 
-## Documention
+## Documentation
 
 ### Targets File
 
