@@ -8,8 +8,8 @@ The goal of this is to make it easy to run gauntlt 100% automated. Which means i
 
 * [Usage](#usage)
 * [Documention](#documentation)
-** [Targets File](#targets_file)
-** [Template Files](#template_files)
+  * [Targets File](#targets_file)
+  * [Template Files](#template_files)
 
 ## Usage
 
@@ -45,7 +45,7 @@ Using `nmap_os_apache.erb' as an example:
 @announce-cmd
 @slow
 
-Feature: Service detection. Make sure Apache is running and does not display the version
+Feature: Service detection. Make sure Apache is running <%= config[:host] %> and does not display the version
 
   Background:
     Given "nmap" is installed
@@ -72,6 +72,12 @@ Feature: Service detection. Make sure Apache is running and does not display the
 ```
 This start with 2 options: `@announce-cmd` to display the command line used and `@slow` to increase the timeout.
 
+**Feature** describes what this test is about. The `<%= config[:host] %>` in the description will be replaced by the `:host` data item from the targets file
+
+**Background** describes the environment required for all the following tests.
+The example's background contain 2 items. First a step to verify that the nmap is installed. The second item is a data table and some Ruby code to bring in all the data items from the targets file. This table definition should be in all templates.
+
+**Scenario** describes the steps for the attack and testing the results. This launches an nmap attack with the command line `nmap -sV -p T:<port_open> -PN <hostname>`. `port_open` and `hostname` are pulled from the data table which was pulled from the targets file. Then it tests the output to ensure that it contained `Apache`, but did not have a version number after it
 
 Thanks
 ======

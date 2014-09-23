@@ -1,7 +1,7 @@
 @announce-cmd
 @slow
 
-Feature: nmap attacks for <%= config[:host] %> and to use this for your tests, change the value in the profile
+Feature: nmap attacks for <%= config[:host] %> to verify correct port is open and others are not
   Background:
     Given "nmap" is installed
     And the following profile:

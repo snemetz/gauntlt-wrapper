@@ -1,7 +1,7 @@
 @announce-cmd
 @slow
 
-Feature: Service detection. Make sure Apache is running and does not display the version
+Feature: Service detection. Make sure Apache is running on <%= config[:host] %> and does not display the version
 
   Background:
     Given "nmap" is installed
