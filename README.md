@@ -4,8 +4,14 @@ Making running gauntlt in a CI workflow easier
 
 The goal of this is to make it easy to run gauntlt 100% automated. Which means install scripts for all tools used, working templates that can be used without modifications.
 
-Usage
-===========
+## Table of Contents
+
+* [Usage](#usage)
+* [Documention](#documentation)
+** [Targets File](#targets_file)
+** [Template Files](#template_files)
+
+## Usage
 
 * Copy the contents of this repository to a directory
 * `install-tools.sh` is a work in progress for installing all the tools in virtual environments on CentOS
@@ -19,6 +25,52 @@ Usage
 * Previously generated attack files will be deleted upon generation.
 
 Please note that the templates included here are works in progress. Some are complete and some may need to be modified. Feel free to sumbit pull requests to add more templates.
+
+## Documention
+
+### Targets File
+
+`gauntlt_gen.targets` file describes what should be run and what data is passed to the templates. It has 2 sections: `:data` and `attacks`
+
+`:data` is where all data to be passed to the templates is defined. Any data item defined here will be passed to the template. But the templates defines what data items it uses
+
+`:attacks` is a list of the attacks to run. The names match the file names of the templates
+
+### Template Files
+
+Template files reside under the `templates/` directory. Each one defines a specific attack and the results it should test for. These are Ruby ERB templates, so they will contain some Ruby code.
+
+Using `nmap_os_apache.erb' as an example:
+```
+@announce-cmd
+@slow
+
+Feature: Service detection. Make sure Apache is running and does not display the version
+
+  Background:
+    Given "nmap" is installed
+    And the following profile:
+      | name     | value            |
+      <% config.each do |name, value| -%>
+      | <%= name %> | <%= value %> |
+      <% end -%>
+
+  Scenario: Detect OS
+    When I launch an "nmap" attack with:
+      """
+      nmap -sV -p T:<port_open> -PN <hostname>
+      """
+    # Verify Apache server with no version info
+    Then the output should contain:
+      """
+      Apache
+      """
+    But the output should not match:
+      """
+      Apache httpd [0-9.]+
+      """
+```
+This start with 2 options: `@announce-cmd` to display the command line used and `@slow` to increase the timeout.
 
 
 Thanks
