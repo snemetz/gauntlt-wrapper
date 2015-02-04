@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Gauntlt-wrapper : Automate gauntlt for easy CI use">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Gauntlt-wrapper</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/snemetz/gauntlt-wrapper">View on GitHub</a>
+
+          <h1 id="project_title">Gauntlt-wrapper</h1>
+          <h2 id="project_tagline">Automate gauntlt for easy CI use</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/snemetz/gauntlt-wrapper/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/snemetz/gauntlt-wrapper/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="gauntlt_wrapper" class="anchor" href="#gauntlt_wrapper" aria-hidden="true"><span class="octicon octicon-link"></span></a>gauntlt_wrapper</h1>
+
+<p>Making running gauntlt in a CI workflow easier</p>
+
+<p>The goal of this is to make it easy to run gauntlt 100% automated. Which means install scripts for all tools used, working templates that can be used without modifications.</p>
+
+<h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Table of Contents</h2>
+
+<ul>
+<li><a href="#usage">Usage</a></li>
+<li>
+<a href="#documentation">Documentation</a>
+
+<ul>
+<li><a href="#targets-file">Targets File</a></li>
+<li><a href="#template-files">Template Files</a></li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<ul>
+<li>Copy the contents of this repository to a directory</li>
+<li>
+<code>install-tools.sh</code> is a work in progress for installing all the tools in virtual environments on CentOS</li>
+<li>
+<code>init.env.sh</code> is for getting environment setup in a new shell after everything haas been installed</li>
+<li><p><code>run.sh</code> is for generating the attack files and running gauntlt</p></li>
+<li><p>Create <code>gauntlt_gen.targets</code> using <code>gauntlt_gen.targets.example</code> as an example.</p></li>
+<li><p>Create/modify templates in <code>templates/</code> Keep the filenames simple, as they are referenced by the <code>gauntlt_gen.targets</code> file.</p></li>
+<li><p>Your attack files will be created in <code>attacks/</code> as <code>_gen_*.attack</code></p></li>
+<li>Previously generated attack files will be deleted upon generation.</li>
+</ul>
+
+<p>Please note that the templates included here are works in progress. Some are complete and some may need to be modified. Feel free to sumbit pull requests to add more templates.</p>
+
+<h2>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<h3>
+<a id="targets-file" class="anchor" href="#targets-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Targets File</h3>
+
+<p><code>gauntlt_gen.targets</code> file describes what should be run and what data is passed to the templates. It has 2 sections: <code>:data</code> and <code>attacks</code></p>
+
+<p><code>:data</code> is where all data to be passed to the templates is defined. Any data item defined here will be passed to the template. But the templates defines what data items it uses</p>
+
+<p><code>:attacks</code> is a list of the attacks to run. The names match the file names of the templates</p>
+
+<h3>
+<a id="template-files" class="anchor" href="#template-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template Files</h3>
+
+<p>Template files reside under the <code>templates/</code> directory. Each one defines a specific attack and the results it should test for. These are Ruby ERB templates, so they will contain some Ruby code.</p>
+
+<p>Using `nmap_os_apache.erb' as an example:</p>
+
+<pre><code>@announce-cmd
+@slow
+
+Feature: Service detection. Make sure Apache is running &lt;%= config[:host] %&gt; and does not display the version
+
+  Background:
+    Given "nmap" is installed
+    And the following profile:
+      | name     | value            |
+      &lt;% config.each do |name, value| -%&gt;
+      | &lt;%= name %&gt; | &lt;%= value %&gt; |
+      &lt;% end -%&gt;
+
+  Scenario: Detect OS
+    When I launch an "nmap" attack with:
+      """
+      nmap -sV -p T:&lt;port_open&gt; -PN &lt;hostname&gt;
+      """
+    # Verify Apache server with no version info
+    Then the output should contain:
+      """
+      Apache
+      """
+    But the output should not match:
+      """
+      Apache httpd [0-9.]+
+      """
+</code></pre>
+
+<p>This start with 2 options: <code>@announce-cmd</code> to display the command line used and <code>@slow</code> to increase the timeout.</p>
+
+<p><strong>Feature</strong> describes what this test is about. The <code>&lt;%= config[:host] %&gt;</code> in the description will be replaced by the <code>:host</code> data item from the targets file</p>
+
+<p><strong>Background</strong> describes the environment required for all the following tests.
+The example's background contain 2 items. First a step to verify that the nmap is installed. The second item is a data table and some Ruby code to bring in all the data items from the targets file. This table definition should be in all templates.</p>
+
+<p><strong>Scenario</strong> describes the steps for the attack and testing the results. This launches an nmap attack with the command line <code>nmap -sV -p T:&lt;port_open&gt; -PN &lt;hostname&gt;</code>. <code>port_open</code> and <code>hostname</code> are pulled from the data table which was pulled from the targets file. Then it tests the output to ensure that it contained <code>Apache</code>, but did not have a version number after it</p>
+
+<h1>
+<a id="thanks" class="anchor" href="#thanks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thanks</h1>
+
+<ul>
+<li>Patrick Morgan for gauntlt_gen. Which helped getting this started. My version is part of this repo and is not compatible with the original.</li>
+<li>Everyone working on gauntlt</li>
+</ul>
+
+<p>The MIT License</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Gauntlt-wrapper maintained by <a href="https://github.com/snemetz">snemetz</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
